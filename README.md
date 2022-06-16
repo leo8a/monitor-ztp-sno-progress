@@ -15,21 +15,8 @@ The labels are not removed, but overwritten with "true".
 + set -o pipefail
 + cat
 + chmod u+x /tmp/mc-monitor
-+ exec oc observe managedcluster --type-env-var=KUBE_ACTION --maximum-errors=1 --resync-period=10m '--template={.metadata.name}' -- /tmp/mc-monitor
-# 2022-06-16T15:51:08Z Sync started
-# 2022-06-16T15:51:08Z Sync 302664577	/tmp/mc-monitor local-cluster local-cluster
-
-# 2022-06-16T15:51:08Z Sync 302664626	/tmp/mc-monitor zt-sno3 zt-sno3
-
-# 2022-06-16T15:51:08Z Sync 302669066	/tmp/mc-monitor zt-sno4 zt-sno4
-
-# 2022-06-16T15:51:18Z Sync ended
-# 2022-06-16T15:51:18Z Updated 302699798	/tmp/mc-monitor zt-sno4 zt-sno4
++ exec oc observe managedcluster --quiet --type-env-var=KUBE_ACTION --maximum-errors=1 --resync-period=10m '--template={.metadata.name}' -- /tmp/mc-monitor
 
 Adding true to ztp-running label on zt-sno4 - The DU profile has been applied
 managedcluster.cluster.open-cluster-management.io/zt-sno4 labeled
-# 2022-06-16T15:51:31Z Updated 302700180	/tmp/mc-monitor zt-sno4 zt-sno4
-
-No resources found
-No resources found
 ```
