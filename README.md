@@ -8,6 +8,15 @@ This repo includes the files to monitor for ZTP workflow progress in the managed
 
 The labels are not removed, but overwritten with "true". 
 
+To install: 
+
+```
+git clone https://github.com/dav1x/monitor-ztp-sno-progress/
+cd monitor-ztp-sno-progress
+oc create -k .
+```
+
+The logs should look like this:
 ```
 -> oc logs -f mc-monitor-568844fbcb-d7rdb 
 + set -o errexit
