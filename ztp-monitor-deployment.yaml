@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mc-monitor
+  name: ztp-monitor-mc 
 spec:
   progressDeadlineSeconds: 600
   replicas: 1
   revisionHistoryLimit: 10
   selector:
     matchLabels:
-      deployment: mc-monitor
+      deployment: ztp-monitor-mc
   strategy:
     rollingUpdate:
       maxSurge: 25%
@@ -17,7 +17,7 @@ spec:
   template:
     metadata:
       labels:
-        deployment: mc-monitor
+        deployment: ztp-monitor-mc 
     spec:
       containers:
       - args:
@@ -26,15 +26,14 @@ spec:
           set -o nounset
           set -o pipefail
           #unset KUBECONFIG
-          cat <<SCRIPT > /tmp/mc-monitor
+          cat <<SCRIPT > /tmp/ztp-monitor-mc
           #!/bin/bash
           echo $@
 
           function monitor_mc_labels {
             
-            until [[ \$(oc get managedcluster --selector='ztp-done=') || \$(oc get managedcluster --selector='ztp-running=')  ]]; do
-              echo "Waiting for cluster install to finish or DU profile to be applied"
-              sleep 1;
+            until [[ \$(oc get managedcluster --ignore-not-found=true --selector='ztp-done=') || \$(oc get managedcluster --ignore-not-found=true --selector='ztp-running=') ]]; do
+              sleep 5;
             done
           }
 
@@ -43,11 +42,11 @@ spec:
 
             label="false"
 
-            if [[ \$(oc get managedcluster --selector='ztp-done=') ]]; then
+            if [[ \$(oc get managedcluster --ignore-not-found=true --selector='ztp-done=') ]]; then
               label="ztp-done"
             fi
 
-            if [[ \$(oc get managedcluster --selector='ztp-running=') ]]; then
+            if [[ \$(oc get managedcluster --ignore-not-found=true --selector='ztp-running=') ]]; then
               label="ztp-running"
             fi
 
@@ -71,16 +70,16 @@ spec:
                    ;;
           esac
           SCRIPT
-          chmod u+x /tmp/mc-monitor
+          chmod u+x /tmp/ztp-monitor-mc
 
-          exec oc observe managedcluster --type-env-var=KUBE_ACTION --maximum-errors=1 --resync-period=10m --template='{.metadata.name}' -- /tmp/mc-monitor
+          exec oc observe managedcluster --quiet --type-env-var=KUBE_ACTION --maximum-errors=1 --resync-period=10m --template='{.metadata.name}' -- /tmp/ztp-monitor-mc
         command:
         - /bin/bash
         - -xc
         #- "sleep 9000"
         image: jumphost.inbound.vz.bos2.lab:5000/openshift4/ose-cli@sha256:728b0198d84b0730f17b07103d00391c18b8c4f2c9c75d64aa6b7aba83185d59
         imagePullPolicy: IfNotPresent
-        name: mc-monitor
+        name: ztp-monitor-mc
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
       dnsPolicy: ClusterFirst
