@@ -53,11 +53,15 @@ spec:
             case \$label in
             
             ztp-running)
+              api_endpoint=\$(oc get managedcluster \$managedcluster_name -o jsonpath='{.spec.managedClusterClientConfigs[0].url}') 
               echo "Adding true to ztp-running label on \$managedcluster_name - This cluster is finished installing"
+              echo "API endpoint is \$api_endpoint"
               oc label managedcluster --overwrite \$managedcluster_name ztp-running=true
               ;; 
             ztp-done)
+              api_endpoint=\$(oc get managedcluster \$managedcluster_name -o jsonpath='{.spec.managedClusterClientConfigs[0].url}') 
               echo "Adding true to ztp-running label on \$managedcluster_name - The DU profile has been applied"
+              echo "API endpoint is \$api_endpoint"
               oc label managedcluster --overwrite \$managedcluster_name ztp-done=true 
               ;;
 
@@ -73,6 +77,7 @@ spec:
           chmod u+x /tmp/ztp-monitor-mc
 
           exec oc observe managedcluster --quiet --type-env-var=KUBE_ACTION --maximum-errors=1 --resync-period=10m --template='{.metadata.name}' -- /tmp/ztp-monitor-mc
+          #exec oc observe managedcluster --quiet --type-env-var=KUBE_ACTION --maximum-errors=1 --resync-period=10m --template='{.spec.managedClusterClientConfigs[0].url}' -- /tmp/ztp-monitor-mc
         command:
         - /bin/bash
         - -xc
