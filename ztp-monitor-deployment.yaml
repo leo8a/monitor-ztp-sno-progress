@@ -32,7 +32,7 @@ spec:
 
           function monitor_mc_labels {
             
-            until [[ \$(oc get managedcluster --ignore-not-found=true --selector='ztp-done=') || \$(oc get managedcluster --ignore-not-found=true --selector='ztp-running=') ]]; do
+            until [[ \$(oc get managedcluster --ignore-not-found=true --selector='ztp-done=') && ! \$(oc get managedcluster --ignore-not-found=true --selector='ztp-monitor-done=true') || \$(oc get managedcluster --ignore-not-found=true --selector='ztp-running=') && ! \$(oc get managedcluster --ignore-not-found=true --selector='ztp-monitor-done=true') ]]; do
               sleep 5;
             done
           }
@@ -54,15 +54,15 @@ spec:
             
             ztp-running)
               api_endpoint=\$(oc get managedcluster \$managedcluster_name -o jsonpath='{.spec.managedClusterClientConfigs[0].url}') 
-              echo "Adding true to ztp-running label on \$managedcluster_name - This cluster is finished installing"
+              echo "Adding true to ztp-monitor-running label on \$managedcluster_name - This cluster is finished installing"
               echo "API endpoint is \$api_endpoint"
-              oc label managedcluster --overwrite \$managedcluster_name ztp-running=true
+              oc label managedcluster --overwrite \$managedcluster_name ztp-monitor-running=true
               ;; 
             ztp-done)
               api_endpoint=\$(oc get managedcluster \$managedcluster_name -o jsonpath='{.spec.managedClusterClientConfigs[0].url}') 
-              echo "Adding true to ztp-running label on \$managedcluster_name - The DU profile has been applied"
+              echo "Adding true to ztp-monitor-done label on \$managedcluster_name - The DU profile has been applied"
               echo "API endpoint is \$api_endpoint"
-              oc label managedcluster --overwrite \$managedcluster_name ztp-done=true 
+              oc label managedcluster --overwrite \$managedcluster_name ztp-monitor-done=true 
               ;;
 
             esac
