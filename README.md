@@ -31,3 +31,8 @@ API endpoint is https://api.zt-sno4.inbound.vz.bos2.lab:6443
 managedcluster.cluster.open-cluster-management.io/zt-sno4 labeled
 
 ```
+
+Based on work from this gist:
+https://gist.github.com/bbeaudoin/6ee37424a2a4aaa42fff1bc3232426fa
+
+Thanks @[bbeaudoin](https://gist.github.com/bbeaudoin)!
