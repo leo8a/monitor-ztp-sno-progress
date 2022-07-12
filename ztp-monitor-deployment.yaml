@@ -32,7 +32,7 @@ spec:
 
           function monitor_mc_labels {
             
-            until [[ \$(oc get managedcluster --ignore-not-found=true --selector='ztp-done=') && ! \$(oc get managedcluster --ignore-not-found=true --selector='ztp-monitor-done=true') || \$(oc get managedcluster --ignore-not-found=true --selector='ztp-running=') && ! \$(oc get managedcluster --ignore-not-found=true --selector='ztp-monitor-done=true') ]]; do
+            until [[ \$(oc get managedcluster --ignore-not-found=true --selector='ztp-done=') && ! \$(oc get managedcluster --ignore-not-found=true --selector='ztp-monitor-done=true') || \$(oc get managedcluster --ignore-not-found=true --selector='ztp-running=') && ! \$(oc get managedcluster --ignore-not-found=true --selector='ztp-monitor-running=true') ]]; do
               sleep 5;
             done
           }
