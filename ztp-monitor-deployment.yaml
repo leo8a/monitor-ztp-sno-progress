@@ -53,9 +53,7 @@ spec:
             case \$label in
             
             ztp-running)
-              api_endpoint=\$(oc get managedcluster \$managedcluster_name -o jsonpath='{.spec.managedClusterClientConfigs[0].url}') 
               echo "Adding true to ztp-monitor-running label on \$managedcluster_name - This cluster is finished installing"
-              echo "API endpoint is \$api_endpoint"
               oc label managedcluster --overwrite \$managedcluster_name ztp-monitor-running=true
               ;; 
             ztp-done)
