@@ -26,6 +26,11 @@ The logs should look like this:
 + chmod u+x /tmp/mc-monitor
 + exec oc observe managedcluster --quiet --type-env-var=KUBE_ACTION --maximum-errors=1 --resync-period=10m '--template={.metadata.name}' -- /tmp/mc-monitor
 
+Adding true to ztp-running label on zt-sno3 - This cluster is finished installing
+API endpoint is https://api.zt-sno3.inbound.vz.bos2.lab:6443
+managedcluster.cluster.open-cluster-management.io/zt-sno3 labeled
+
+
 Adding true to ztp-running label on zt-sno4 - The DU profile has been applied
 API endpoint is https://api.zt-sno4.inbound.vz.bos2.lab:6443
 managedcluster.cluster.open-cluster-management.io/zt-sno4 labeled
