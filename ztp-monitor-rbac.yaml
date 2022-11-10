@@ -1,7 +1,7 @@
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: cluster-ztp-monitor-mc 
+  name: cluster-ztp-launch-ansible-job
 rules:
 - apiGroups:
   - cluster.open-cluster-management.io
@@ -21,4 +21,12 @@ rules:
   - list
   - watch
   - patch
-
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+  - patch

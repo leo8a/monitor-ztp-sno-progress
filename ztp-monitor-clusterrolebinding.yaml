@@ -1,12 +1,12 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: cluster-ztp-monitor-mc 
+  name: cluster-ztp-launch-ansible-job
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: cluster-ztp-monitor-mc 
+  name: cluster-ztp-launch-ansible-job
 subjects:
 - kind: ServiceAccount
-  name: ztp-monitor-mc 
-  namespace: open-cluster-management
+  name: ztp-launch-ansible-job
+  namespace: ztp-day2-automation

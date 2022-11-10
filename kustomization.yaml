@@ -2,8 +2,9 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-# managedcluster is clusterwide need clusterrolebinding
+  - ztp-monitor-ns.yaml
   - ztp-monitor-sa.yaml
-  - ztp-monitor-rbac.yaml
+  - zt-monitor-secret.yaml                # -> update .data.token and .data.host accordingly
+  - ztp-monitor-rbac.yaml                 # -> managedcluster is clusterwide need clusterrolebinding
   - ztp-monitor-clusterrolebinding.yaml
-  - ztp-monitor-deployment.yaml
+  - ztp-monitor-deployment-ansiblejob.yaml

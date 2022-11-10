@@ -1,0 +1,76 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ztp-launch-ansible-job
+  namespace: ztp-day2-automation
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      deployment: ztp-launch-ansible-job
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        deployment: ztp-launch-ansible-job
+    spec:
+      containers:
+        - args:
+            - |
+              set -o errexit
+              set -o nounset
+              set -o pipefail
+
+              cat <<SCRIPT > /tmp/launch_ansible_job
+              #!/bin/bash
+              echo $@
+
+              target_managed_cluster=\$1
+              namespace="ztp-day2-automation"
+              secret_name="aap-controller-token"
+              job_template_name="ztp-day2-automation-template"
+
+              # 1) Get Automation Controller/Tower token for authentication
+              function get_tower_token {
+                token=\$(oc -n \$namespace get secret \$secret_name --output jsonpath="{.data.token}" | base64 --decode)
+              }
+
+              # 2) Get Automation Controller/Tower API endpoint
+              function get_api_endpoint {
+                api_url=\$(oc -n \$namespace get secret \$secret_name --output jsonpath="{.data.host}" | base64 --decode)
+              }
+
+              # 3) Launch job template in Automation Controller/Tower
+              function launch_ansible_job {
+                curl -k -H "Authorization: Bearer \$token" -H "Content-Type: application/json" -X POST -d '{"extra_vars": {"target_clusters": ["'\$target_managed_cluster'"]}}' \$api_url/api/v2/job_templates/\$job_template_name/launch/
+
+                echo "Launching job template called \$job_template_name in Automation Controller/Tower for \$target_managed_cluster"
+              }
+
+              get_tower_token
+              get_api_endpoint
+              launch_ansible_job
+              SCRIPT
+              chmod u+x /tmp/launch_ansible_job
+
+              exec oc observe managedcluster --maximum-errors=1 --resync-period=10m --selector=ztp-done="" -- /tmp/launch_ansible_job
+          command:
+            - /bin/bash
+            - -xc
+          image: jumphost.inbound.vz.bos2.lab:5000/openshift4/ose-cli@sha256:728b0198d84b0730f17b07103d00391c18b8c4f2c9c75d64aa6b7aba83185d59
+          imagePullPolicy: IfNotPresent
+          name: ztp-launch-ansible-job
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      serviceAccountName: ztp-launch-ansible-job
+      terminationGracePeriodSeconds: 30
